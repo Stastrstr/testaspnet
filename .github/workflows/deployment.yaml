@@ -67,7 +67,7 @@ jobs:
       - name: Build endpoint from app name
         id: get_endpoint
         run: |
-          echo "endpoint=https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/weatherforecast" >> $GITHUB_OUTPUT
+          echo "endpoint=https://githubcrashcourse-g0h9arfhbvbmcsdu.polandcentral-01.azurewebsites.net/weatherforecast" >> $GITHUB_OUTPUT
 
   verify-deployment:
     needs: deploy
@@ -78,7 +78,6 @@ jobs:
           APP_ENDPOINT: ${{ needs.deploy.outputs.app-endpoint }}
         run: |
           echo "Calling endpoint: $APP_ENDPOINT"
-          # Try the endpoint and capture HTTP status and body
           status=$(curl -s -o response.txt -w "%{http_code}" "$APP_ENDPOINT" || echo "000")
           echo "HTTP status: $status"
           echo "Response body:"
