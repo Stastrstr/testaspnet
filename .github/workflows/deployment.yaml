@@ -45,6 +45,8 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: needs.build-and-test.result == 'success'
+    outputs:
+      app-endpoint: ${{ steps.get_endpoint.outputs.endpoint }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -61,3 +63,23 @@ jobs:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}                # repository secret: app name (sensitive)
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # repository secret: publish profile (sensitive)
           package: ./publish
+          
+      - name: Build endpoint from app name
+        id: get_endpoint
+        run: |
+          echo "endpoint=https://${{ secrets.AZURE_WEBAPP_NAME }}.azurewebsites.net/weatherforecast" >> $GITHUB_OUTPUT
+
+  verify-deployment:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call deployed app endpoint
+        env:
+          APP_ENDPOINT: ${{ needs.deploy.outputs.app-endpoint }}
+        run: |
+          echo "Calling endpoint: $APP_ENDPOINT"
+          # Try the endpoint and capture HTTP status and body
+          status=$(curl -s -o response.txt -w "%{http_code}" "$APP_ENDPOINT" || echo "000")
+          echo "HTTP status: $status"
+          echo "Response body:"
+          cat response.txt || true
