@@ -19,8 +19,19 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
            dotnet-version: '8.0.x'
-           cache: true
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          # cross-platform NuGet package folders (actions/cache will pick the correct one for the runner)
+          path: |
+            ~/.nuget/packages
+            %USERPROFILE%\.nuget\packages
+          # include global.json / csproj hash and OS so cache invalidates when project or SDK changes
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/global.json') }}-${{ hashFiles('**/*.csproj') }}-dotnet-8.0
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+              
       - name: Restore
         run: dotnet restore
 
