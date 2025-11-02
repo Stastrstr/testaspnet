@@ -60,7 +60,7 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}                # repository secret: app name (sensitive)
+          app-name: githubcrashcourse-g0h9arfhbvbmcsdu.polandcentral-01        
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # repository secret: publish profile (sensitive)
           package: ./publish
           
